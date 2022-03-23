@@ -1,0 +1,76 @@
+## BIG-M ##
+A = [1 3 1 0 3
+     1 1 0 1 2];
+b = [3
+     2];
+m = 2;
+n = 5;
+C = [-3
+     -5
+     -10000
+     -100000
+     0];
+
+B = [3 
+     4];
+
+while true
+    
+    Ct_B = [C(B(1))
+            C(B(2))];
+    
+    zj_min_cj = [0
+                 0
+                 0
+                 0];
+
+    for i = 1:n                 %Calculate Cost difference
+        zj_min_cj(i) = (Ct_B(1) * A(1, i)) + (Ct_B(2) * A(2, i)) - C(i);
+    end
+    
+    
+    small = zj_min_cj(1);
+    enter = 1;
+    
+    for i = 2:(n - 1)           %Find entering variable
+        if (zj_min_cj(i) < small)
+            small = zj_min_cj(i);
+            enter = i;
+        end
+    end
+    
+     if small >= 0
+         break;
+     end
+    
+    fraction = 200;
+    leave = 0;
+    for i = 1:m        %Find leaving variable
+        if ((A(i, enter) > 0) && ((A(i, n) / A(i, enter)) < fraction))
+            fraction = A(i, n) / A(i, enter);
+            leave = i;    
+        end
+    end
+    if leave == 0
+       break;
+    end
+
+    for i=1:m
+        if (B(i) == B(leave))
+            B(i) = enter;
+        end
+    end
+  
+    pivot = A(leave, enter);  %Pivot element
+
+    A(leave, :) = A(leave, :) / pivot;
+    
+    for i=1:m                 
+        if (i ~= leave)
+            multiplier = A(i, enter);
+            A(i, :) = A(i, :) - (multiplier * A(leave, :));
+        end
+    end
+end
+
+disp(A(:, n));
